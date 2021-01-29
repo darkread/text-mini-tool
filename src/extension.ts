@@ -35,5 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 // org name coffcesugar1314
 // token xjv3gxwylauohwx3fs4ivikgluhmqvpgzozlweld55slvdhk3mna
+// github token bd269b55393087587b2830096febc488c4cd02df
+// github account darkread
 // this method is called when your extension is deactivated
 export function deactivate() {}
