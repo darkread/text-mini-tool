@@ -188,3 +188,60 @@ export function showHistoryQuickPick(
 	qp.activeItems = [];
 	qp.show();
 }
+export function showHistoryQuickPickWithDefaultValue(
+	defaultValue:string,
+	options: HistoryQuickPickOptions
+) {
+	const fullHistoryStateKey = `history.${options.historyStateKey}`;
+	let historyItems = options.context.globalState.get<string[]>(fullHistoryStateKey, []);
+
+	const qp = vscode.window.createQuickPick();
+	qp.title = options.title;
+	qp.items = historyItems.map(x => {
+		return {
+			label: x
+		};
+	});
+	if(defaultValue){
+		qp.value = defaultValue;
+	}
+	qp.onDidChangeValue(() => {
+		if (qp.activeItems.length > 0) {
+			if (qp.activeItems[0].label !== qp.value) {
+				qp.activeItems = [];
+			}
+		}
+	});
+	qp.onDidAccept(() => {
+		let selectedValue: string;
+		
+		if (qp.activeItems.length) {
+			selectedValue = qp.activeItems[0].label;
+		} else {
+			selectedValue = qp.value;
+		}
+
+		if (!selectedValue) {
+			return;
+		}
+
+		if (historyItems.indexOf(selectedValue) !== -1) {
+			historyItems.splice(historyItems.indexOf(selectedValue), 1);
+		}
+
+		historyItems.splice(0, 0, selectedValue);
+		
+		if (historyItems.length > 10) {
+			historyItems = historyItems.slice(0, 10);
+		}
+
+		options.context.globalState.update(fullHistoryStateKey, historyItems);
+
+		qp.hide();
+		qp.dispose();
+
+		options.onDidAccept(selectedValue);
+	});
+	qp.activeItems = [];
+	qp.show();
+}

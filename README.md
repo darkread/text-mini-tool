@@ -1,6 +1,6 @@
 # text-mini-tool README
 
-This is the README for your extension "text-mini-tool". After writing up a brief description, we recommend including the following sections.
+This is the README for vscode extension "text-mini-tool". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 

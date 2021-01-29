@@ -3,6 +3,7 @@
   "displayName": "text_mini_tool",
   "description": "text mini tool",
   "version": "0.0.1",
+  "publisher":"coffcesugar1314",
   "engines": {
     "vscode": "^1.52.0"
   },
@@ -12,6 +13,7 @@
   "activationEvents": [
     "onCommand:text-mini-tool.helloWorld"
     ,"onCommand:text-mini-tool.delDupEnterChars"
+    ,"onCommand:text-mini-tool.delDupEnterCharsToNewEditor"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -23,6 +25,10 @@
       {
         "command": "text-mini-tool.delDupEnterChars",
         "title": "Delete Dup Enter Chars"
+      },
+      {
+        "command": "text-mini-tool.delDupEnterCharsToNewEditor",
+        "title": "Delete Dup Enter Chars To New Editor"
       }
     ]
   },

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getExtensionSettings } from "../helpers/tptSettings";
-import { getSelectionLines, getSelectionsOrFullDocument,getFullDocumentRange, replaceSelectionsWithLines, showHistoryQuickPick ,createNewEditor} from "../helpers/vsCodeHelpers";
+import { getSelectionLines, getSelectionsOrFullDocument,getFullDocumentRange, replaceSelectionsWithLines, showHistoryQuickPick ,createNewEditor,showHistoryQuickPickWithDefaultValue} from "../helpers/vsCodeHelpers";
 import { NO_ACTIVE_EDITOR } from "../consts";
 
 export enum FilterType {
@@ -20,7 +20,7 @@ interface IFilterTextCommandOptions {
 	fullText: boolean;
 }
 
-export async function runFilterTextCommand(context: vscode.ExtensionContext, options: IFilterTextCommandOptions) {
+export async function runFilterTextCommand(context: vscode.ExtensionContext, options: IFilterTextCommandOptions, quickAction:string='') {
 	const settings = getExtensionSettings();
 
 	const editor = vscode.window.activeTextEditor;
@@ -29,12 +29,13 @@ export async function runFilterTextCommand(context: vscode.ExtensionContext, opt
 		vscode.window.showWarningMessage(NO_ACTIVE_EDITOR);
 		return;
 	}
-
-	showHistoryQuickPick({
+	let title = options.sourceType === FilterSourceType.String
+	? "Please enter the filter text"
+	: "Please enter the filter regular expression";
+	// = quickAction !== '' ? quickAction:''
+	showHistoryQuickPickWithDefaultValue('\\n{2,}',{
 		context: context,
-		title: options.sourceType === FilterSourceType.String
-			? "Please enter the filter text"
-			: "Please enter the filter regular expression",
+		title: title,
 		historyStateKey: "filterText-" + options.sourceType.toString(),
 		onDidAccept: async (filter: string) => {
 			if (!filter) {
@@ -56,7 +57,12 @@ export async function runFilterTextCommand(context: vscode.ExtensionContext, opt
 					}
 				}
 				let text = lines.join('\n');
-				const regexObject = options.sourceType === FilterSourceType.Regex ? new RegExp(filter, settings.caseSensitiveFiltering === false ? "i" : undefined) : new RegExp("");
+				let flags = '';
+				if(settings.caseSensitiveFiltering === false){
+					flags+='i';
+				}
+				flags+='g';
+				const regexObject = options.sourceType === FilterSourceType.Regex ? new RegExp(filter, flags) : new RegExp("");
 				text = text.replace(regexObject,'\n');
 				let targetEditor:vscode.TextEditor;
 				if (options.inNewEditor === true) {
